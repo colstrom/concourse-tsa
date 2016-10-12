@@ -11,12 +11,12 @@ import (
 	"sync"
 	"time"
 
+	"code.cloudfoundry.org/clock"
 	gclient "code.cloudfoundry.org/garden/client"
 	gconn "code.cloudfoundry.org/garden/client/connection"
+	"code.cloudfoundry.org/lager"
 	"github.com/concourse/atc"
 	"github.com/concourse/tsa"
-	"code.cloudfoundry.org/clock"
-	"code.cloudfoundry.org/lager"
 	"github.com/tedsuo/ifrit"
 	"github.com/tedsuo/rata"
 	"golang.org/x/crypto/ssh"
@@ -31,7 +31,10 @@ type registrarSSHServer struct {
 	forwardHost       string
 	config            *ssh.ServerConfig
 	httpClient        *http.Client
+	sessionTeam       sessionTeam
 }
+
+type sessionTeam map[string]string
 
 type forwardedTCPIP struct {
 	bindAddr  string
@@ -64,6 +67,8 @@ func (server *registrarSSHServer) handshake(logger lager.Logger, netConn net.Con
 		logger.Info("handshake-failed", lager.Data{"error": err.Error()})
 		return
 	}
+
+	fmt.Printf("Sessions: %#v", server.sessionTeam)
 
 	defer conn.Close()
 

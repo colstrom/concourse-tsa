@@ -68,8 +68,6 @@ func (server *registrarSSHServer) handshake(logger lager.Logger, netConn net.Con
 		return
 	}
 
-	fmt.Printf("Sessions: %#v", server.sessionTeam)
-
 	defer conn.Close()
 
 	forwardedTCPIPs := make(chan forwardedTCPIP, 2)
@@ -77,6 +75,8 @@ func (server *registrarSSHServer) handshake(logger lager.Logger, netConn net.Con
 
 	var processes []ifrit.Process
 	var process ifrit.Process
+
+	connTeam := server.sessionTeam[string(conn.SessionID())]
 
 	// ensure processes get cleaned up
 	defer func() {
@@ -115,6 +115,17 @@ func (server *registrarSSHServer) handshake(logger lager.Logger, netConn net.Con
 		}
 
 		defer channel.Close()
+
+		var worker atc.Worker
+		err = json.NewDecoder(channel).Decode(&worker)
+		if err != nil {
+			return
+		}
+
+		if worker.Team != connTeam {
+			logger.Info("worker not allowed for team: " + worker.Team)
+			return
+		}
 
 		for req := range requests {
 			logger.Info("channel-request", lager.Data{

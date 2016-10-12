@@ -14,7 +14,6 @@ import (
 	"code.cloudfoundry.org/lager"
 	"github.com/concourse/atc"
 	"github.com/concourse/tsa"
-	"github.com/concourse/tsa/tsacmd/flaghelpers"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/tedsuo/ifrit"
 	"github.com/tedsuo/ifrit/sigmon"
@@ -28,9 +27,9 @@ type TSACommand struct {
 
 	PeerIP string `long:"peer-ip" required:"true" description:"IP address of this TSA, reachable by the ATCs. Used for forwarded worker addresses."`
 
-	HostKeyPath            FileFlag                    `long:"host-key"        required:"true" description:"Path to private key to use for the SSH server."`
-	AuthorizedKeysPath     FileFlag                    `long:"authorized-keys" required:"true" description:"Path to file containing keys to authorize, in SSH authorized_keys format (one public key per line)."`
-	TeamAuthorizedKeysPath []flaghelpers.InputPairFlag `long:"team-authorized-keys" value-name:"NAME=PATH" description:"Path to file containing keys to authorize, in SSH authorized_keys format (one public key per line)."`
+	HostKeyPath            FileFlag        `long:"host-key"        required:"true" description:"Path to private key to use for the SSH server."`
+	AuthorizedKeysPath     FileFlag        `long:"authorized-keys" required:"true" description:"Path to file containing keys to authorize, in SSH authorized_keys format (one public key per line)."`
+	TeamAuthorizedKeysPath []InputPairFlag `long:"team-authorized-keys" value-name:"NAME=PATH" description:"Path to file containing keys to authorize, in SSH authorized_keys format (one public key per line)."`
 
 	ATCURL                URLFlag  `long:"atc-url" required:"true" description:"ATC API endpoint to which workers will be registered."`
 	SessionSigningKeyPath FileFlag `long:"session-signing-key" required:"true" description:"Path to private key to use when signing tokens in reqests to the ATC during registration."`

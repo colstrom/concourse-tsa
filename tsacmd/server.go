@@ -160,6 +160,11 @@ func (server *registrarSSHServer) handshake(logger lager.Logger, netConn net.Con
 				err = conn.Wait()
 				logger.Error("connection-closed", err)
 
+			case landWorkerRequest:
+				logger := logger.Session("register-worker")
+
+				logger.Fatal("what-do-i-do", errors.New("something"))
+
 			case forwardWorkerRequest:
 				logger := logger.Session("forward-worker")
 
